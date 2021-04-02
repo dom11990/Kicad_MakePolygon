@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'makePolygonDialog.ui'
+# Form implementation generated from reading ui file 'MakePolygonDialog.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.4
 #
@@ -61,10 +61,10 @@ class Ui_MainWindow(object):
         self.label_4 = QtWidgets.QLabel(self.centralwidget)
         self.label_4.setObjectName("label_4")
         self.gridLayout.addWidget(self.label_4, 2, 0, 1, 1)
-        self.doubleSpinBox = QtWidgets.QDoubleSpinBox(self.centralwidget)
-        self.doubleSpinBox.setProperty("value", 0.1)
-        self.doubleSpinBox.setObjectName("doubleSpinBox")
-        self.gridLayout.addWidget(self.doubleSpinBox, 2, 3, 1, 1)
+        self.dsb_ArcLength = QtWidgets.QDoubleSpinBox(self.centralwidget)
+        self.dsb_ArcLength.setProperty("value", 0.1)
+        self.dsb_ArcLength.setObjectName("dsb_ArcLength")
+        self.gridLayout.addWidget(self.dsb_ArcLength, 2, 3, 1, 1)
         self.verticalLayout.addLayout(self.gridLayout)
         self.l_Status = QtWidgets.QLabel(self.centralwidget)
         self.l_Status.setEnabled(True)
@@ -109,7 +109,7 @@ class Ui_MainWindow(object):
         self.label.setToolTip(_translate("MainWindow", "Width of the polygon lines. Recommended 0"))
         self.label.setText(_translate("MainWindow", "Line Width"))
         self.label_4.setText(_translate("MainWindow", "Max arc length [mm]"))
-        self.doubleSpinBox.setToolTip(_translate("MainWindow", "Specifies the maximum length an arc is allowed to have when discretizing. A smaller number means finer steps and therefore more line segments to approximate the arc."))
+        self.dsb_ArcLength.setToolTip(_translate("MainWindow", "Specifies the maximum length an arc is allowed to have when discretizing. A smaller number means finer steps and therefore more line segments to approximate the arc."))
         self.l_Status.setText(_translate("MainWindow", "Status"))
         self.b_Polygonize.setText(_translate("MainWindow", "Polygonize!"))
 
