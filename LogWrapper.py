@@ -7,22 +7,18 @@ if LOGURU_ENABLE:
     from loguru import logger
 
 
-
-def logDebug(text:str):
+def LogDebug(text:str):
     if LOGURU_ENABLE:
         logger.debug(text)
 
-def logInfo(text:str):
+def LogInfo(text:str):
     if LOGURU_ENABLE:
         logger.info(text)
 
-def logWarning(text:str):
+def LogWarning(text:str):
     if LOGURU_ENABLE:
         logger.warning(text)
 
-def logError(text:str):
+def LogError(text:str):
     if LOGURU_ENABLE:
         logger.error(text)   
-
-if LOGURU_ENABLE:
-    logger.add("/home/dom/loguru.log")
