@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'MakePolygonDialog.ui'
+# Form implementation generated from reading ui file 'PolygonizeDialog.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.4
 #
@@ -15,7 +15,7 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.setWindowModality(QtCore.Qt.ApplicationModal)
-        MainWindow.resize(300, 316)
+        MainWindow.resize(300, 294)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -100,10 +100,23 @@ class Ui_MainWindow(object):
         self.horizontalLayout.setObjectName("horizontalLayout")
         spacerItem3 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout.addItem(spacerItem3)
+        self.b_Footprint = QtWidgets.QPushButton(self.centralwidget)
+        self.b_Footprint.setObjectName("b_Footprint")
+        self.horizontalLayout.addWidget(self.b_Footprint)
         self.b_Discretize = QtWidgets.QPushButton(self.centralwidget)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.b_Discretize.sizePolicy().hasHeightForWidth())
+        self.b_Discretize.setSizePolicy(sizePolicy)
         self.b_Discretize.setObjectName("b_Discretize")
         self.horizontalLayout.addWidget(self.b_Discretize)
         self.b_Polygonize = QtWidgets.QPushButton(self.centralwidget)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.b_Polygonize.sizePolicy().hasHeightForWidth())
+        self.b_Polygonize.setSizePolicy(sizePolicy)
         self.b_Polygonize.setObjectName("b_Polygonize")
         self.horizontalLayout.addWidget(self.b_Polygonize)
         self.verticalLayout.addLayout(self.horizontalLayout)
@@ -143,6 +156,9 @@ class Ui_MainWindow(object):
         self.label_4.setToolTip(_translate("MainWindow", "Specifies the maximum length an arc is allowed to have when discretizing. A smaller number means finer steps and therefore more line segments to approximate the arc."))
         self.label_4.setText(_translate("MainWindow", "Max arc length [mm]"))
         self.dsb_ArcLength.setToolTip(_translate("MainWindow", "Specifies the maximum length an arc is allowed to have when discretizing. A smaller number means finer steps and therefore more line segments to approximate the arc."))
+        self.b_Footprint.setToolTip(_translate("MainWindow", "Export the selection as a footprint"))
+        self.b_Footprint.setText(_translate("MainWindow", "Export as\n"
+" Footprint"))
         self.b_Discretize.setText(_translate("MainWindow", "Discretize Arcs"))
         self.b_Polygonize.setText(_translate("MainWindow", "Polygonize!"))
         self.menuHelp.setTitle(_translate("MainWindow", "Help"))

@@ -9,21 +9,14 @@ from PyQt5.QtGui import *
 from PyQt5 import QtWidgets
 
 
-
-# from PolygonConverter import PolygonConverter
-
-# sys.path.append("/home/dom/Documents/Source/KiCAD/action_scripts/MakePolygon/") 
-# sys.path.append("./") 
-
 import pcbnew
 
-from MakePolygonDialog import Ui_MainWindow
-
+from PolygonizeDialog import Ui_MainWindow
 
 from PolygonConverter import *
 from LogWrapper import *
 
-class Polygonize(pcbnew.ActionPlugin):
+class PolygonizePlugin(pcbnew.ActionPlugin):
     def defaults(self):
         self.name = "Polygonize"
         self.category = ""
@@ -35,17 +28,17 @@ class Polygonize(pcbnew.ActionPlugin):
 
         app = QtWidgets.QApplication([])
                         
-        application = MakePolygonDialog()
+        application = PolygonizeDialog()
         application.show()
         retval = app.exec()
         # sys.exit(app.exec())
 
 
-class MakePolygonDialog(QtWidgets.QMainWindow):
+class PolygonizeDialog(QtWidgets.QMainWindow):
 
     def __init__(self):
 
-        super(MakePolygonDialog, self).__init__()
+        super(PolygonizeDialog, self).__init__()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 
@@ -74,8 +67,7 @@ class MakePolygonDialog(QtWidgets.QMainWindow):
         copperLayerCount = self._pcb.GetCopperLayerCount()
         
         #this layer stuff is so gross. there must be a better way...
-        # todo: extract only the layers that the user selected in their
-        # board config
+        # todo: extract only the layers that the user selected in their board config
         layers = []
         # layers are organized with copper at the start, FCu , InnerN.. BCu
         # so if fewer than all copper layers are used the index has to be changed
@@ -245,4 +237,4 @@ class MakePolygonDialog(QtWidgets.QMainWindow):
     def SetButtonsEnabled(self, enabled: bool):
         self.ui.b_Discretize.setEnabled(enabled)
         self.ui.b_Polygonize.setEnabled(enabled)
-        
+    

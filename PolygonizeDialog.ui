@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>300</width>
-    <height>316</height>
+    <height>294</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -246,7 +246,24 @@
        </spacer>
       </item>
       <item>
+       <widget class="QPushButton" name="b_Footprint">
+        <property name="toolTip">
+         <string>Export the selection as a footprint</string>
+        </property>
+        <property name="text">
+         <string>Export as
+ Footprint</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QPushButton" name="b_Discretize">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="text">
          <string>Discretize Arcs</string>
         </property>
@@ -254,6 +271,12 @@
       </item>
       <item>
        <widget class="QPushButton" name="b_Polygonize">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="text">
          <string>Polygonize!</string>
         </property>

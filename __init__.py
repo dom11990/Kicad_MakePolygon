@@ -1,5 +1,5 @@
 try:    
-    import MakePolygon
-    MakePolygon.Polygonize().register()
+    import PolygonizePlugin
+    PolygonizePlugin.PolygonizePlugin().register()
 except Exception as e:
     pass
