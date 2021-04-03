@@ -15,3 +15,5 @@ This is an action plugin for KiCad 5.x. It allows the user to convert an selecti
 4. Click Polygonize or Discretize, depending on your needs
 
 Note: Polygonize does several checks and structure changes to make life easier, such as allowing two enclosed structures that share endpoints to be considered one. This is particularly common in RF design exports. This may take some time. Even on a decent consumer computer, it can take several seconds to generate the polygon- just be patient. I may optimize this in the future.
+
+![Demo](/Support/demo.gif)
