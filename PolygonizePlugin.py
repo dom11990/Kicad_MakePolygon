@@ -12,6 +12,7 @@ from PyQt5 import QtWidgets
 import pcbnew
 
 from PolygonizeDialog import Ui_MainWindow
+from ExportFootprintDialog import Ui_mw_ExportFootprint
 
 from PolygonConverter import *
 from LogWrapper import *
@@ -45,8 +46,11 @@ class PolygonizeDialog(QtWidgets.QMainWindow):
         # slots
         self.ui.b_Polygonize.clicked.connect(self.PolygonizeClicked)
         self.ui.b_Discretize.clicked.connect(self.DiscretizeClicked)
+        self.ui.b_Footprint.clicked.connect(self.ExportFootprintClicked)
+
         self.ui.actionAbout.triggered.connect(self.AboutClicked)
         self.ui.actionHow_to_use.triggered.connect(self.HowToUseClicked)
+        
         # make escape close the window
         shortcut = QtWidgets.QShortcut(QKeySequence("Escape"), self)
         shortcut.activated.connect(self.close)
@@ -80,8 +84,6 @@ class PolygonizeDialog(QtWidgets.QMainWindow):
         # add the valid layers to the combo box
         for s in layers:
             self.ui.cb_Layer.addItem(s)
-            
-        
 
     def UpdateStatus(self, text: str) -> None:
         self.ui.l_Status.setText(text)
@@ -186,6 +188,8 @@ class PolygonizeDialog(QtWidgets.QMainWindow):
         msgBox = QtWidgets.QMessageBox()
         msgBox.setText("Successfully discretized {} arcs, creating {} new lines".format(arcsDiscretized,linesCreated))
         msgBox.exec()
+        
+        
         self.close()
 
 
@@ -233,6 +237,15 @@ class PolygonizeDialog(QtWidgets.QMainWindow):
         msgBox = QtWidgets.QMessageBox()
         msgBox.setText("See Readme or Github: {} for full, up-to-date description.".format(self._github))
         msgBox.exec()
+
+    def ExportFootprintClicked(self):
+        self.mw_ExportFootprint = QtWidgets.QMainWindow()
+    
+        ui = Ui_mw_ExportFootprint()
+        ui.setupUi(self.mw_ExportFootprint)
+        self.mw_ExportFootprint.show()
+        # self.hide()
+        self.mw_ExportFootprint.show()
 
     def SetButtonsEnabled(self, enabled: bool):
         self.ui.b_Discretize.setEnabled(enabled)
