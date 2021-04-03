@@ -246,6 +246,3 @@ class MakePolygonDialog(QtWidgets.QMainWindow):
         self.ui.b_Discretize.setEnabled(enabled)
         self.ui.b_Polygonize.setEnabled(enabled)
         
-
-Polygonize().register() # Instantiate and register to Pcbnew
-# Polygonize().Run()
