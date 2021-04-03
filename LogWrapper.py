@@ -1,6 +1,7 @@
-LOGURU_ENABLE = True
 # Optional dependencies: loguru
 # if you want to disable logging, set LOGURU_ENABLE = False
+
+LOGURU_ENABLE = True
 
 
 if LOGURU_ENABLE:
