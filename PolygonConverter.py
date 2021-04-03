@@ -1,5 +1,3 @@
-import matplotlib.pyplot as plt
-
 import os
 import sys
 import numpy as np
@@ -49,6 +47,15 @@ def ArcLineCount(arc,maxArcLength_mm):
 
 
 def ArcToLines(arc,maxArcLength_mm):
+    """Converts the input arc into a list of line segments.
+
+    Args:
+        arc (DRAWSEGMENT): Arc object to convert
+        maxArcLength_mm (float): Maximum length of the arc to create a line from
+
+    Returns:
+        List[DRAWSEGMENT]: list of newly created lines
+    """
     # we want mm
     maxArcLength = pcbnew.FromMM(maxArcLength_mm) 
     
@@ -80,7 +87,6 @@ def ArcToLines(arc,maxArcLength_mm):
     for i in range(0,stepCount):
         nextPoint = cmath.rect(radius,startAngle + i*maxArcAngle)
         nextPoint += centerOffset
-        # LogDebug(nextPoint)
         points.append(nextPoint)
 
     # get the remainder of the last step so that the final segment ends 
@@ -108,16 +114,41 @@ def ArcToLines(arc,maxArcLength_mm):
     return lines
 
 #TODO: make this function fail-safe
-def LinesToPolygon(lines):
+def LinesToPolygon(lines, deleteDupes = True):
         
         sourceLines = []
-        dupeLines = []
-        #remove dupes
+        # ignore lines that are points (same start and end)
         for line in lines:
             if not (_Equal(line.GetStart().x,line.GetEnd().x) and _Equal(line.GetStart().y,line.GetEnd().y)):
                 sourceLines.append(line)
-            else:
-                dupeLines.append(line)
+                
+
+        # TODO: this dupe detection and closure detection is really slow and clunky. Consider re-writing for performance instead of readability
+
+        # collect the indexes of all dupes
+        dupes = []
+        for idx, line in enumerate(sourceLines):
+            
+            for jdx, innerLine in enumerate(sourceLines):
+                if(((_Equal(line.GetStart().x, innerLine.GetStart().x) and  _Equal(line.GetStart().y, innerLine.GetStart().y) and 
+                _Equal(line.GetEnd().x, innerLine.GetEnd().x) and  _Equal(line.GetEnd().y, innerLine.GetEnd().y)) or                   
+                (_Equal(line.GetStart().x, innerLine.GetEnd().x) and  _Equal(line.GetStart().y, innerLine.GetEnd().y) and
+                _Equal(line.GetEnd().x, innerLine.GetStart().x) and  _Equal(line.GetEnd().y, innerLine.GetStart().y))) and 
+                jdx != idx):
+                    LogWarning("Duplicate found: Line1: [{},{}] [{},{}] Line2: [{},{}] [{},{}]".format(line.GetStart().x,line.GetStart().y,line.GetEnd().x,line.GetEnd().y,innerLine.GetStart().x,innerLine.GetStart().y,innerLine.GetEnd().x,innerLine.GetEnd().y))
+                    # the two segments are identical or start and end positions are swapped
+                    # dont consider them in the polygon 
+                    dupes.append(jdx)
+        # loop through and remove the duplicate elements from the source list
+        temp = sourceLines.copy()
+        sourceLines = []
+        for idx, line in enumerate(temp):
+            if not idx in dupes:
+                # means this is a segment that does not have a dupe
+                sourceLines.append(line)
+        temp = None
+        
+
 
         matchedLines = []
         matchedLines.append(sourceLines[0])
@@ -168,7 +199,7 @@ def LinesToPolygon(lines):
                     found = True
 
                 if(found):
-                    #we found a match!
+                    #we found a perfect match!
                     matchedLines.append(line)
                     del sourceLines[idx]
                     break
@@ -177,7 +208,7 @@ def LinesToPolygon(lines):
                 raise Exception("Structure is not fully enclosed. Check to make sure every line or arc ends perfectly on another, ultimately forming a completely enclosed structure with no crossing / self-intersection")
         
         # now check the last lines closes with the first line
-        #TODO: actual do this check...
+        #TODO: actual do this check...though it may not be necessary. Probably, the polygon will simply come out wrong :)
         
         
         #we made it through the whole structure and it appears to be enclose
@@ -198,15 +229,10 @@ def LinesToPolygon(lines):
         
         polygon.SetPolyPoints(points)
 
-
-        xx = [p.x for p in points]
-        yy = [p.y for p in points]
-
         LogInfo("Polyshape valid: {}".format(polygon.IsPolyShapeValid()))
         LogInfo("Polygon Position: {} {}".format(pcbnew.ToMM(polygon.GetPosition().x),pcbnew.ToMM(polygon.GetPosition().y)))
 
-        # plt.plot(xx,yy)
-        # plt.show()
+
         
 
 

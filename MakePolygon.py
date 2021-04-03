@@ -5,7 +5,7 @@ import sys
 
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
+# from PyQt5.QtWidgets import *
 from PyQt5 import QtWidgets
 
 
@@ -34,7 +34,7 @@ class Polygonize(pcbnew.ActionPlugin):
         # The entry function of the plugin that is executed on user action
 
         app = QtWidgets.QApplication([])
-        
+                        
         application = MakePolygonDialog()
         application.show()
         retval = app.exec()
@@ -52,13 +52,26 @@ class MakePolygonDialog(QtWidgets.QMainWindow):
         # slots
         self.ui.b_Polygonize.clicked.connect(self.PolygonizeClicked)
         self.ui.b_Discretize.clicked.connect(self.DiscretizeClicked)
+        self.ui.actionAbout.triggered.connect(self.AboutClicked)
+        self.ui.actionHow_to_use.triggered.connect(self.HowToUseClicked)
+        # make escape close the window
+        shortcut = QtWidgets.QShortcut(QKeySequence("Escape"), self)
+        shortcut.activated.connect(self.close)
 
         # class members
-        self.pcb = pcbnew.GetBoard()
+        self._pcb = pcbnew.GetBoard()
+        self._version = 0.1
+        self._github = "https://github.com/dom11990/Kicad_MakePolygon"
 
+        # center the main window
+        desktopRect = QtWidgets.QApplication.desktop().availableGeometry()
+        center = desktopRect.center()
+        self.move(center.x() - self.width() * 0.5, center.y() - self.height() * 0.5)
         
+
+
         layerCount = pcbnew.PCB_LAYER_ID_COUNT
-        copperLayerCount = self.pcb.GetCopperLayerCount()
+        copperLayerCount = self._pcb.GetCopperLayerCount()
         
         #this layer stuff is so gross. there must be a better way...
         # todo: extract only the layers that the user selected in their
@@ -122,7 +135,7 @@ class MakePolygonDialog(QtWidgets.QMainWindow):
         """
 
         selected = []
-        drawings = self.pcb.GetDrawings()
+        drawings = self._pcb.GetDrawings()
         for idx,drawing in enumerate(drawings):
             if drawing.IsSelected():
                 selected.append(drawing)
@@ -131,7 +144,7 @@ class MakePolygonDialog(QtWidgets.QMainWindow):
 
     def DiscretizeClicked(self):
         self.UpdateStatus("Getting drawings...")
-        drawings = self.pcb.GetDrawings()
+        drawings = self._pcb.GetDrawings()
         self.UpdateStatus("Got drawing count: {}".format(drawings.GetCount()))
         
         drawings = self.GetSelectedDrawings()
@@ -139,41 +152,48 @@ class MakePolygonDialog(QtWidgets.QMainWindow):
         if not self.ValidateSelectionDiscretize(drawings):
             return
 
-
+        arcsDiscretized = 0
+        linesCreated = 0
         for idx,drawing in enumerate(drawings):
             shapeStr = drawing.GetShapeStr()
             self.UpdateStatus("Selected type: "+shapeStr)
             
             if shapeStr == "Arc":
-                # ArcToLines(drawing, self.ui.dsb_ArcLength.value())
-                newLines = ArcToLines(drawing, 0.05)
+                try:
+                    newLines = ArcToLines(drawing, 0.05)
+                except Exception as ex:
+                    self.ui.l_Status.setText(str(ex))
+                    return
+                
                 self.UpdateStatus("Parsing object {} of {}".format(idx,len(drawings)))
                 # get the selected layer IDs
-                layerID = self.pcb.GetLayerID(self.ui.cb_Layer.currentText())
+                layerID = self._pcb.GetLayerID(self.ui.cb_Layer.currentText())
                 # add the new lines to the board
                 for line in newLines: 
-                    line.SetParent(self.pcb)
+                    line.SetParent(self._pcb)
                     line.SetLayer(layerID)
                     line.SetWidth(pcbnew.FromMM(int(self.ui.dsb_Width.value())))
-                    self.pcb.Add(line) 
+                    self._pcb.Add(line) 
                 if(self.ui.chb_DeleteAfter.checkState()):
-                    self.pcb.Remove(drawing)
+                    self._pcb.Remove(drawing)
 
-                
+                arcsDiscretized += 1
+                linesCreated += len(newLines)
             elif shapeStr == "Line":
                 pass
             elif shapeStr == "Polygon":
-                self.ui.l_Status.setText("Invalid! Selection contains a polygon, only arcs and lines are allowed.")
-                valid= False
+                self.ui.l_Status.setText("Invalid! Selection contains a polygon, only arcs and lines are allowed. Ignoring invalid items and proceeding.")
                 break
 
             elif shapeStr == "Circle":
-                self.ui.l_Status.setText("Invalid! Selection contains a circle, only arcs and lines are allowed.")
-                valid = False
+                self.ui.l_Status.setText("Invalid! Selection contains a circle, only arcs and lines are allowed. Ignoring invalid items and proceeding.")
                 break
             
             
         pcbnew.Refresh()
+        msgBox = QtWidgets.QMessageBox()
+        msgBox.setText("Successfully discretized {} arcs, creating {} new lines".format(arcsDiscretized,linesCreated))
+        msgBox.exec()
         self.close()
 
 
@@ -183,26 +203,48 @@ class MakePolygonDialog(QtWidgets.QMainWindow):
         if not self.ValidateSelectionPolygon(drawings):
             self.ui.l_Status.setText("Polygons can only be made from lines. If you have arcs, discretize them first.")
             return
-        poly = LinesToPolygon(drawings)
+        try:
+            self.SetButtonsEnabled(False)
+            poly = LinesToPolygon(drawings)
+        except Exception as ex:
+            self.ui.l_Status.setText(str(ex))
+            return
+        finally:
+            self.SetButtonsEnabled(True)
+            
         
         # apply user selected properties, add it to the board, and close
-        poly.SetParent(self.pcb)
-        layerID = self.pcb.GetLayerID(self.ui.cb_Layer.currentText())
+        poly.SetParent(self._pcb)
+        layerID = self._pcb.GetLayerID(self.ui.cb_Layer.currentText())
         poly.SetLayer(layerID)
         poly.SetShape(pcbnew.S_POLYGON)
         poly.SetWidth(pcbnew.FromMM(int(self.ui.dsb_Width.value())))
-        self.pcb.Add(poly) 
+        self._pcb.Add(poly) 
 
         if(self.ui.chb_DeleteAfter.checkState()):
-            for line in drawings: self.pcb.Remove(line)
+            for line in drawings: self._pcb.Remove(line)
 
         pcbnew.Refresh()
-        self.ui.l_Status.setText("Added polygon")
+        msgBox = QtWidgets.QMessageBox()
+        msgBox.setText("Successfully generated polygon!")
+        msgBox.exec()
         
         self.close()
 
-#TODO: if during poligonization i find a duplicate, give the option to delete both! this allows two structures that touch to be treated as one large structure
 
+    def AboutClicked(self):
+        msgBox = QtWidgets.QMessageBox()
+        msgBox.setText("Version {}, 2021\nDominik Eyerly\nGithub: {}".format(self._version,self._github))
+        msgBox.exec()
+
+    def HowToUseClicked(self):
+        msgBox = QtWidgets.QMessageBox()
+        msgBox.setText("See Readme or Github: {} for full, up-to-date description.".format(self._github))
+        msgBox.exec()
+
+    def SetButtonsEnabled(self, enabled: bool):
+        self.ui.b_Discretize.setEnabled(enabled)
+        self.ui.b_Polygonize.setEnabled(enabled)
         
 
 Polygonize().register() # Instantiate and register to Pcbnew
