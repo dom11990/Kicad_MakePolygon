@@ -5,7 +5,7 @@ This is an action plugin for KiCad 5.x. It allows the user to convert an selecti
 # Dependencies
  - Python3
  - Loguru (pip install loguru)
- - PyQt5 (pip install PyQt5
+ - PyQt5 (pip install PyQt5)
  - Qt5 (varies from distro to distro, for Arch sudo pacman -S qt5-base)
 
 # How to Use
