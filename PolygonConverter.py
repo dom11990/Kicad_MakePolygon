@@ -195,7 +195,6 @@ def LinesToPolygon(lines, deleteDupes = True):
                     line.SetStartY(line.GetEnd().y)
                     line.SetEndX(x1)
                     line.SetEndY(y1)
-                    LogInfo("Swapping start- and end-points")
                     found = True
 
                 if(found):
