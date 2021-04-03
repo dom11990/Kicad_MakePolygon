@@ -9,7 +9,7 @@ This is an action plugin for KiCad 5.x. It allows the user to convert an selecti
  - Qt5 (varies from distro to distro, for Arch sudo pacman -S qt5-base)
 
 ## Installation
-Copy or link the whole folder into /usr/share/kicad/scripting/plugins. Example: `sudo ln -s /FULL/PATH/TO/GITHUB/CLONE/FOLDER/makePolygon /usr/share/kicad/scripting/plugins`
+Copy or link the whole folder into /usr/share/kicad/scripting/plugins. Example: `sudo ln -s /FULL/PATH/TO/GITHUB/CLONE/FOLDER/Kicad_MakePolygon /usr/share/kicad/scripting/plugins`
 
 ## How to Use
 1. Select the structures you want to discretize or polygonize
