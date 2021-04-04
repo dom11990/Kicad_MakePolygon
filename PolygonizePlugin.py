@@ -12,7 +12,8 @@ from PyQt5 import QtWidgets
 import pcbnew
 
 from PolygonizeDialog import Ui_MainWindow
-from ExportFootprintDialog import Ui_mw_ExportFootprint
+
+from ExportFootprint import ExportFootprint
 
 from PolygonConverter import *
 from LogWrapper import *
@@ -239,15 +240,17 @@ class PolygonizeDialog(QtWidgets.QMainWindow):
         msgBox.exec()
 
     def ExportFootprintClicked(self):
-        self.mw_ExportFootprint = QtWidgets.QMainWindow()
-    
-        ui = Ui_mw_ExportFootprint()
-        ui.setupUi(self.mw_ExportFootprint)
-        self.mw_ExportFootprint.show()
-        # self.hide()
-        self.mw_ExportFootprint.show()
+        self._exportWindow = ExportFootprint()
+        self._exportWindow.finished.connect(self.ExportDialogDone)
+        self.hide()
+        self._exportWindow.show()
+
+
 
     def SetButtonsEnabled(self, enabled: bool):
         self.ui.b_Discretize.setEnabled(enabled)
         self.ui.b_Polygonize.setEnabled(enabled)
     
+    def ExportDialogDone(self, result):
+        LogInfo("Dialog result: {}".format(result))
+        self.show()

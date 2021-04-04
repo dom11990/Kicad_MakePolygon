@@ -11,15 +11,23 @@ if LOGURU_ENABLE:
 def LogDebug(text:str):
     if LOGURU_ENABLE:
         logger.debug(text)
+    else:
+        print(text)
 
 def LogInfo(text:str):
     if LOGURU_ENABLE:
         logger.info(text)
+    else:
+        print(text)
 
 def LogWarning(text:str):
     if LOGURU_ENABLE:
         logger.warning(text)
+    else:
+        print(text)
 
 def LogError(text:str):
     if LOGURU_ENABLE:
-        logger.error(text)   
+        logger.error(text)  
+    else:
+        print(text)
