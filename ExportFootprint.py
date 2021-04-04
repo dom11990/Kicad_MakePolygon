@@ -18,15 +18,55 @@ class ExportFootprint(QtWidgets.QDialog):
         # slots
         self.ui.b_Save.clicked.connect(self.SaveClicked)
         self.ui.b_Cancel.clicked.connect(self.CancelClicked)
-        
+        self.ui.b_SelectPath.clicked.connect(self.FolderClicked)
+
+
+
+    def ValidateSave(self) -> bool:
+            """Checks if a valid footprint name and folder are selected
+
+            Returns:
+                bool: true if the selected folder exists
+            """
+            name = self.ui.le_Name.text()
+            folder = QDir(self.ui.le_Path.text())
+
+
+            folderInfo  = QFileInfo(folder.absolutePath())
+
+            if(folderInfo.isDir() and folderInfo.isWritable()):
+                return folder.exists()
+            else:
+                return False
+            
+
+
+            
+
+
+    
+
+
+    # Slots
 
     def SaveClicked(self):
-        self.done(QtWidgets.QDialog.Accepted)
-        self.close()
+        if(self.ValidateSave()):
+            self.done(QtWidgets.QDialog.Accepted)
+            self.close()
+        else:
+            msgBox = QtWidgets.QMessageBox()
+            msgBox.setText("Selected folder does not exist or is write-protected")
+            msgBox.exec()
 
     def CancelClicked(self):
         self.done(QtWidgets.QDialog.Rejected)
         self.close()
 
-
-        # TODO Connect close of the gui with show of the main
+    def FolderClicked(self):
+        dialog = QtWidgets.QFileDialog(self)
+     
+        dialog.setFileMode(QtWidgets.QFileDialog.Directory)
+        _OutputFolder = dialog.getExistingDirectory(self, "Select Destination Folder", QDir.homePath())
+        self.ui.le_Path.setText(_OutputFolder)
+        
+    
