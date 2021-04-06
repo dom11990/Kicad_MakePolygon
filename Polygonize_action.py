@@ -3,7 +3,7 @@ import sys
 #dependencies 
 # pip install loguru PyQt5, matplotlib
 
-# from PyQt5.QtCore import QKeySequence
+from PyQt5.QtCore import QDir, QSettings
 from PyQt5.QtGui import QKeySequence
 
 from PyQt5 import QtWidgets
@@ -59,13 +59,17 @@ class PolygonizeDialog(QtWidgets.QMainWindow):
         self._version = 0.1
         self._github = "https://github.com/dom11990/Kicad_MakePolygon"
 
+        self.CenterWidget()
+        self.InitializeLayers()
+        self.LoadSettings()
+
+    def CenterWidget(self):
         # center the main window
         desktopRect = QtWidgets.QApplication.desktop().availableGeometry()
         center = desktopRect.center()
         self.move(center.x() - self.width() * 0.5, center.y() - self.height() * 0.5)
-        
 
-
+    def InitializeLayers(self):
         layerCount = pcbnew.PCB_LAYER_ID_COUNT
         copperLayerCount = self._pcb.GetCopperLayerCount()
         
@@ -235,6 +239,49 @@ class PolygonizeDialog(QtWidgets.QMainWindow):
         self.ui.b_Discretize.setEnabled(enabled)
         self.ui.b_Polygonize.setEnabled(enabled)
     
+
     def ExportDialogDone(self, result):
         LogInfo("Dialog result: {}".format(result))
         self.show()
+    
+    
+    def SaveSettings(self):
+        LogDebug("Saving main window")
+        settingsPath = QDir.temp().absoluteFilePath("polygonize.ini")
+        settings = QSettings(settingsPath, QSettings.IniFormat)
+        settings.beginGroup("main")
+        settings.setValue("arc_length",self.ui.dsb_ArcLength.value())
+        settings.setValue("width",self.ui.dsb_Width.value())
+        settings.setValue("layer",self.ui.cb_Layer.currentText())
+        settings.setValue("delete_after",self.ui.chb_DeleteAfter.checkState())
+        settings.endGroup()
+        settings.sync()
+        LogDebug("done saving main window")
+        
+
+    def LoadSettings(self):
+        LogDebug("Loading main window")
+        settingsPath = QDir.temp().absoluteFilePath("polygonize.ini")
+        settings = QSettings(settingsPath, QSettings.IniFormat)
+        settings.beginGroup("main")
+        if settings.contains("arc_length"):
+            self.ui.dsb_ArcLength.setValue(float(settings.value("arc_length")))
+        
+        if settings.contains("width"):
+            self.ui.dsb_Width.setValue(float(settings.value("width")))
+        
+        if settings.contains("layer"):
+            layer = settings.value("layer")
+            layerIndex = self.ui.cb_Layer.findText(layer)
+            if(layerIndex >= 0):
+                #it is in the ini and it is a valid layer on this board
+                self.ui.cb_Layer.setCurrentIndex(layerIndex)
+        
+        if settings.contains("delete_after"):
+            self.ui.chb_DeleteAfter.setCheckState(int(settings.value("delete_after")))
+        
+        LogDebug("done loading main window")
+
+    def closeEvent(self, event):
+        self.SaveSettings()
+        event.accept()

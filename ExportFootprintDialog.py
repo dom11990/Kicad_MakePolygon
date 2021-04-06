@@ -64,6 +64,10 @@ class Ui_mw_ExportFootprint(object):
 
         self.retranslateUi(mw_ExportFootprint)
         QtCore.QMetaObject.connectSlotsByName(mw_ExportFootprint)
+        mw_ExportFootprint.setTabOrder(self.le_Path, self.b_SelectPath)
+        mw_ExportFootprint.setTabOrder(self.b_SelectPath, self.le_Name)
+        mw_ExportFootprint.setTabOrder(self.le_Name, self.b_Cancel)
+        mw_ExportFootprint.setTabOrder(self.b_Cancel, self.b_Save)
 
     def retranslateUi(self, mw_ExportFootprint):
         _translate = QtCore.QCoreApplication.translate

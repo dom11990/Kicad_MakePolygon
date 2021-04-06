@@ -133,6 +133,13 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>le_Path</tabstop>
+  <tabstop>b_SelectPath</tabstop>
+  <tabstop>le_Name</tabstop>
+  <tabstop>b_Cancel</tabstop>
+  <tabstop>b_Save</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

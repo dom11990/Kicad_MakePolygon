@@ -316,6 +316,15 @@
    </property>
   </action>
  </widget>
+ <tabstops>
+  <tabstop>dsb_Width</tabstop>
+  <tabstop>cb_Layer</tabstop>
+  <tabstop>dsb_ArcLength</tabstop>
+  <tabstop>chb_DeleteAfter</tabstop>
+  <tabstop>b_Footprint</tabstop>
+  <tabstop>b_Discretize</tabstop>
+  <tabstop>b_Polygonize</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

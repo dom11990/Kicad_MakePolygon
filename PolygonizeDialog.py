@@ -140,6 +140,12 @@ class Ui_PolygonizeDialog(object):
 
         self.retranslateUi(PolygonizeDialog)
         QtCore.QMetaObject.connectSlotsByName(PolygonizeDialog)
+        PolygonizeDialog.setTabOrder(self.dsb_Width, self.cb_Layer)
+        PolygonizeDialog.setTabOrder(self.cb_Layer, self.dsb_ArcLength)
+        PolygonizeDialog.setTabOrder(self.dsb_ArcLength, self.chb_DeleteAfter)
+        PolygonizeDialog.setTabOrder(self.chb_DeleteAfter, self.b_Footprint)
+        PolygonizeDialog.setTabOrder(self.b_Footprint, self.b_Discretize)
+        PolygonizeDialog.setTabOrder(self.b_Discretize, self.b_Polygonize)
 
     def retranslateUi(self, PolygonizeDialog):
         _translate = QtCore.QCoreApplication.translate
