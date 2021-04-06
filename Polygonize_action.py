@@ -7,18 +7,16 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 # from PyQt5.QtWidgets import *
 from PyQt5 import QtWidgets
-
-
 import pcbnew
 
-from PolygonizeDialog import Ui_MainWindow
 
-from ExportFootprint import ExportFootprint
+from .PolygonizeDialog import Ui_PolygonizeDialog
+from .ExportFootprint import ExportFP
+from .PolygonConverter import *
+from .LogWrapper import *
 
-from PolygonConverter import *
-from LogWrapper import *
 
-class PolygonizePlugin(pcbnew.ActionPlugin):
+class PolygonizePluginAction(pcbnew.ActionPlugin):
     def defaults(self):
         self.name = "Polygonize"
         self.category = ""
@@ -41,7 +39,7 @@ class PolygonizeDialog(QtWidgets.QMainWindow):
     def __init__(self):
 
         super(PolygonizeDialog, self).__init__()
-        self.ui = Ui_MainWindow()
+        self.ui = Ui_PolygonizeDialog()
         self.ui.setupUi(self)
 
         # slots
@@ -121,20 +119,6 @@ class PolygonizeDialog(QtWidgets.QMainWindow):
         return valid
         
 
-    
-    def GetSelectedDrawings(self):
-        """Retrieves only the selected drawings
-
-        Returns:
-            List of drawings:
-        """
-
-        selected = []
-        drawings = self._pcb.GetDrawings()
-        for idx,drawing in enumerate(drawings):
-            if drawing.IsSelected():
-                selected.append(drawing)
-        return selected
 
 
     def DiscretizeClicked(self):
@@ -240,7 +224,7 @@ class PolygonizeDialog(QtWidgets.QMainWindow):
         msgBox.exec()
 
     def ExportFootprintClicked(self):
-        self._exportWindow = ExportFootprint()
+        self._exportWindow = ExportFP()
         self._exportWindow.finished.connect(self.ExportDialogDone)
         self.hide()
         self._exportWindow.show()
@@ -254,3 +238,11 @@ class PolygonizeDialog(QtWidgets.QMainWindow):
     def ExportDialogDone(self, result):
         LogInfo("Dialog result: {}".format(result))
         self.show()
+
+
+
+if __name__ == "__main__":
+    try:    
+        PolygonizePluginAction().Run()
+    except Exception as e:
+        print(e)

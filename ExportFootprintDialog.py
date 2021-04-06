@@ -47,6 +47,7 @@ class Ui_mw_ExportFootprint(object):
         self.label_2.setObjectName("label_2")
         self.gridLayout_2.addWidget(self.label_2, 1, 0, 1, 1)
         self.le_Path = QtWidgets.QLineEdit(mw_ExportFootprint)
+        self.le_Path.setAutoFillBackground(False)
         self.le_Path.setObjectName("le_Path")
         self.gridLayout_2.addWidget(self.le_Path, 0, 2, 1, 1)
         self.horizontalLayout_2 = QtWidgets.QHBoxLayout()

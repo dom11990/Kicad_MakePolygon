@@ -1,12 +1,13 @@
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import *
+import pcbnew
 
-from ExportFootprintDialog import Ui_mw_ExportFootprint
-from LogWrapper import *
+from .ExportFootprintDialog import Ui_mw_ExportFootprint
+from .LogWrapper import *
+from .PolygonConverter import WriteToFootprint, GetSelectedDrawings
 
-class ExportFootprint(QtWidgets.QDialog):
 
-
+class ExportFP(QtWidgets.QDialog):
 
     def __init__(self):
         super().__init__()
@@ -39,14 +40,6 @@ class ExportFootprint(QtWidgets.QDialog):
             else:
                 return False
             
-
-
-            
-
-
-    
-
-
     # Slots
 
     def SaveClicked(self):
@@ -57,7 +50,11 @@ class ExportFootprint(QtWidgets.QDialog):
             msgBox = QtWidgets.QMessageBox()
             msgBox.setText("Selected folder does not exist or is write-protected")
             msgBox.exec()
+        
+        polygons = GetSelectedDrawings()
+        WriteToFootprint(self.ui.le_Name.text(),self.ui.le_Path.text(),polygons, True)
 
+    
     def CancelClicked(self):
         self.done(QtWidgets.QDialog.Rejected)
         self.close()

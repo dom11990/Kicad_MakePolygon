@@ -3,8 +3,12 @@ import sys
 import numpy as np
 import cmath
 import pcbnew
+from PyQt5.QtCore import *
 
-from LogWrapper import *
+
+from .LogWrapper import *
+
+
 
 
 # Dependencies: numpy
@@ -241,3 +245,58 @@ def LinesToPolygon(lines, deleteDupes = True):
 
 def _Equal(f1,f2, margin = pcbnew.FromMM(0.0001)) -> bool:
     return abs(f1-f2) < margin
+
+def GetSelectedDrawings():
+    """Retrieves only the selected drawings
+
+    Returns:
+        List of drawings:
+    """
+    selected = []
+    drawings = pcbnew.GetBoard().GetDrawings()
+    for idx,drawing in enumerate(drawings):
+        if drawing.IsSelected():
+            selected.append(drawing)
+    return selected
+
+def WriteToFootprint(name: str, path: str, polygons, createNew: bool = True):
+    header = \
+    "(module {0} (layer F.Cu,) (tedit 5F08A9C4)\n".format(name) + \
+    "  (fp_text reference REF** (at -0.03 -2.63) (layer F.SilkS)\n" + \
+    "    (effects (font (size 1 1) (thickness 0.15)))\n" + \
+    "  )\n" + \
+    "  (fp_text value {} (at 0.08 -4.13) (layer F.Fab) hide\n".format(name) + \
+    "  (effects (font (size 1 1) (thickness 0.15)))\n" + \
+    "  )\n"
+    path = "/home/dom/kicad/FP/test.pretty/"
+
+    dir = QDir(path)
+    filePath = dir.absoluteFilePath(name + ".kicad_mod")
+    if createNew:
+        
+        # delete it since we are creating it new
+        if (QFile(filePath).exists()):
+            LogInfo("Deleting existing footprint at: {}".format(filePath))
+            os.remove(filePath)
+        fileFP = open(filePath,'w')
+        fileFP.write(header)
+
+        # no iterate through the polygon and write
+        # pcbnew.DRAWSEGMENT.GetPolyShape().
+        # pcbnew.DRAWSEGMENT.BuildPolyPointsList()
+        
+        # (fp_poly (pts (xy 18.79 0.499) (xy 17.74 0.499) (xy 17.74 -0.501) (xy 18.79 -0.501)) (layer F.Mask) (width 0))
+
+        for polygon in polygons:
+
+            points = polygon.BuildPolyPointsList()
+            pcbnew.DRAWSEGMENT
+            points_str = ""
+            for point in points:
+                points_str += " (xy {:.3f} {:.3f})".format(pcbnew.ToMM(point.x),pcbnew.ToMM(point.y))
+            fileFP.write("(fp_poly (pts {}) (layer {}) (width {}))".format(points_str, pcbnew.BOARD_GetStandardLayerName(polygon.GetLayer()), polygon.GetWidth()))
+        # write the final closing ')'
+        fileFP.write("\n)")
+        fileFP.close()
+
+

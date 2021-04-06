@@ -1,5 +1,7 @@
+import traceback
+
 try:    
-    import PolygonizePlugin
-    PolygonizePlugin.PolygonizePlugin().register()
+    from .Polygonize_action import PolygonizePluginAction
+    PolygonizePluginAction().register()
 except Exception as e:
-    print(e)
+    print(traceback.format_exc())
