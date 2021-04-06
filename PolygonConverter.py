@@ -3,10 +3,10 @@ import sys
 import numpy as np
 import cmath
 import pcbnew
-from PyQt5.QtCore import *
+from PyQt5.QtCore import QDir, QFile
 
 
-from .LogWrapper import *
+from .LogWrapper import LogDebug, LogError, LogInfo, LogWarning
 
 
 
@@ -232,14 +232,6 @@ def LinesToPolygon(lines, deleteDupes = True):
         
         polygon.SetPolyPoints(points)
 
-        LogInfo("Polyshape valid: {}".format(polygon.IsPolyShapeValid()))
-        LogInfo("Polygon Position: {} {}".format(pcbnew.ToMM(polygon.GetPosition().x),pcbnew.ToMM(polygon.GetPosition().y)))
-
-
-        
-
-
-
         return polygon
 
 
@@ -257,6 +249,7 @@ def GetSelectedDrawings():
     for idx,drawing in enumerate(drawings):
         if drawing.IsSelected():
             selected.append(drawing)
+    LogDebug("Getting {} selected objects".format(idx))
     return selected
 
 def WriteToFootprint(name: str, path: str, polygons, createNew: bool = True):

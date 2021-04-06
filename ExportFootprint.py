@@ -1,9 +1,9 @@
 from PyQt5 import QtWidgets
-from PyQt5.QtCore import *
+from PyQt5.QtCore import QDir, QFileInfo
 import pcbnew
 
 from .ExportFootprintDialog import Ui_mw_ExportFootprint
-from .LogWrapper import *
+from .LogWrapper import LogInfo, LogDebug
 from .PolygonConverter import WriteToFootprint, GetSelectedDrawings
 
 
@@ -22,7 +22,6 @@ class ExportFP(QtWidgets.QDialog):
         self.ui.b_SelectPath.clicked.connect(self.FolderClicked)
 
 
-
     def ValidateSave(self) -> bool:
             """Checks if a valid footprint name and folder are selected
 
@@ -36,11 +35,12 @@ class ExportFP(QtWidgets.QDialog):
             folderInfo  = QFileInfo(folder.absolutePath())
 
             if(folderInfo.isDir() and folderInfo.isWritable()):
-                return folder.exists()
+                return folder.exists() and name != ""
             else:
                 return False
             
     # Slots
+
 
     def SaveClicked(self):
         if(self.ValidateSave()):
@@ -54,10 +54,11 @@ class ExportFP(QtWidgets.QDialog):
         polygons = GetSelectedDrawings()
         WriteToFootprint(self.ui.le_Name.text(),self.ui.le_Path.text(),polygons, True)
 
-    
+
     def CancelClicked(self):
         self.done(QtWidgets.QDialog.Rejected)
         self.close()
+
 
     def FolderClicked(self):
         dialog = QtWidgets.QFileDialog(self)

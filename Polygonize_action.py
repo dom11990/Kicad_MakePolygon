@@ -3,17 +3,17 @@ import sys
 #dependencies 
 # pip install loguru PyQt5, matplotlib
 
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
-# from PyQt5.QtWidgets import *
+# from PyQt5.QtCore import QKeySequence
+from PyQt5.QtGui import QKeySequence
+
 from PyQt5 import QtWidgets
 import pcbnew
 
 
 from .PolygonizeDialog import Ui_PolygonizeDialog
 from .ExportFootprint import ExportFP
-from .PolygonConverter import *
-from .LogWrapper import *
+from .PolygonConverter import GetSelectedDrawings, ArcToLines, LinesToPolygon
+from .LogWrapper import LogDebug, LogError, LogInfo, LogWarning
 
 
 class PolygonizePluginAction(pcbnew.ActionPlugin):
@@ -30,7 +30,7 @@ class PolygonizePluginAction(pcbnew.ActionPlugin):
                         
         application = PolygonizeDialog()
         application.show()
-        retval = app.exec()
+        app.exec()
         # sys.exit(app.exec())
 
 
@@ -104,7 +104,7 @@ class PolygonizeDialog(QtWidgets.QMainWindow):
             bool: True if the selection is good
         """
         valid = True
-        for idx,drawing in enumerate(drawings):
+        for _,drawing in enumerate(drawings):
             if drawing.IsSelected():
                 shapeStr = drawing.GetShapeStr()
                 if shapeStr == "Polygon":
@@ -126,7 +126,7 @@ class PolygonizeDialog(QtWidgets.QMainWindow):
         drawings = self._pcb.GetDrawings()
         self.UpdateStatus("Got drawing count: {}".format(drawings.GetCount()))
         
-        drawings = self.GetSelectedDrawings()
+        drawings = GetSelectedDrawings()
         
         if not self.ValidateSelectionDiscretize(drawings):
             return
@@ -180,7 +180,7 @@ class PolygonizeDialog(QtWidgets.QMainWindow):
 
 
     def PolygonizeClicked(self):
-        drawings = self.GetSelectedDrawings()
+        drawings = GetSelectedDrawings()
         if not self.ValidateSelectionPolygon(drawings):
             self.ui.l_Status.setText("Polygons can only be made from lines. If you have arcs, discretize them first.")
             return
@@ -238,11 +238,3 @@ class PolygonizeDialog(QtWidgets.QMainWindow):
     def ExportDialogDone(self, result):
         LogInfo("Dialog result: {}".format(result))
         self.show()
-
-
-
-if __name__ == "__main__":
-    try:    
-        PolygonizePluginAction().Run()
-    except Exception as e:
-        print(e)
